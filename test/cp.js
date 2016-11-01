@@ -139,7 +139,7 @@ test('-f (explicitly)', t => {
 
 test('simple - to dir', t => {
   const result = shell.cp('resources/file1', TMP);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.falsy(result.stderr);
   t.is(result.code, 0);
   t.is(fs.existsSync(`${TMP}/file1`), true);
@@ -147,7 +147,7 @@ test('simple - to dir', t => {
 
 test('simple - to file', t => {
   const result = shell.cp('resources/file2', `${TMP}/file2`);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.falsy(result.stderr);
   t.is(result.code, 0);
   t.is(fs.existsSync(`${TMP}/file2`), true);
@@ -155,7 +155,7 @@ test('simple - to file', t => {
 
 test('simple - file list', t => {
   const result = shell.cp('resources/file1', 'resources/file2', TMP);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.falsy(result.stderr);
   t.is(result.code, 0);
   t.is(fs.existsSync(`${TMP}/file1`), true);
@@ -164,7 +164,7 @@ test('simple - file list', t => {
 
 test('simple - file list, array syntax', t => {
   const result = shell.cp(['resources/file1', 'resources/file2'], TMP);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.falsy(result.stderr);
   t.is(result.code, 0);
   t.is(fs.existsSync(`${TMP}/file1`), true);
@@ -175,7 +175,7 @@ test('-f option', t => {
   shell.cp('resources/file2', `${TMP}/file3`);
   t.is(fs.existsSync(`${TMP}/file3`), true);
   const result = shell.cp('-f', 'resources/file2', `${TMP}/file3`); // file exists, but -f specified
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.falsy(result.stderr);
   t.is(result.code, 0);
   t.is(fs.existsSync(`${TMP}/file3`), true);
@@ -183,7 +183,7 @@ test('-f option', t => {
 
 test('glob', t => {
   const result = shell.cp('resources/file?', TMP);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.falsy(result.stderr);
   t.is(result.code, 0);
   t.truthy(fs.existsSync(`${TMP}/file1`));
@@ -197,7 +197,7 @@ test('glob', t => {
 test('wildcard', t => {
   shell.rm(`${TMP}/file1`, `${TMP}/file2`);
   const result = shell.cp('resources/file*', TMP);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.falsy(result.stderr);
   t.is(result.code, 0);
   t.truthy(fs.existsSync(`${TMP}/file1`));
@@ -210,7 +210,7 @@ test('wildcard', t => {
 
 test('recursive, with regular files', t => {
   const result = shell.cp('-R', 'resources/file1', 'resources/file2', TMP);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.falsy(result.stderr);
   t.is(result.code, 0);
   t.truthy(fs.existsSync(`${TMP}/file1`));
@@ -219,7 +219,7 @@ test('recursive, with regular files', t => {
 
 test('recursive, nothing exists', t => {
   const result = shell.cp('-R', 'resources/cp', TMP);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.falsy(result.stderr);
   t.is(result.code, 0);
   t.is(shell.ls('-R', 'resources/cp').toString(), shell.ls('-R', `${TMP}/cp`).toString());
@@ -229,7 +229,7 @@ test(
   'recursive, nothing exists, source ends in \'/\' (see Github issue #15)',
   t => {
     const result = shell.cp('-R', 'resources/cp/', `${TMP}/`);
-    t.is(shell.error(), null);
+    t.falsy(shell.error());
     t.falsy(result.stderr);
     t.is(result.code, 0);
     t.is(shell.ls('-R', 'resources/cp').toString(), shell.ls('-R', `${TMP}/cp`).toString());
@@ -240,7 +240,7 @@ test(
   'recursive, globbing regular files with extension (see Github issue #376)',
   t => {
     const result = shell.cp('-R', 'resources/file*.txt', TMP);
-    t.is(shell.error(), null);
+    t.falsy(shell.error());
     t.falsy(result.stderr);
     t.is(result.code, 0);
     t.truthy(fs.existsSync(`${TMP}/file1.txt`));
@@ -252,7 +252,7 @@ test(
   'recursive, copying one regular file (also related to Github issue #376)',
   t => {
     const result = shell.cp('-R', 'resources/file1.txt', TMP);
-    t.is(shell.error(), null);
+    t.falsy(shell.error());
     t.falsy(result.stderr);
     t.is(result.code, 0);
     t.truthy(fs.existsSync(`${TMP}/file1.txt`));
@@ -263,7 +263,7 @@ test(
 test('recursive, everything exists, no force flag', t => {
   shell.cp('-R', 'resources/cp', TMP);
   const result = shell.cp('-R', 'resources/cp', TMP);
-  t.is(shell.error(), null); // crash test only
+  t.falsy(shell.error()); // crash test only
   t.falsy(result.stderr);
   t.is(result.code, 0);
 });
@@ -278,7 +278,7 @@ test('-R implies to not follow links', t => {
       shell.cat(`${TMP}/fakeLinks/sym.lnk`).toString()
     );
     const result = shell.cp('-R', `${TMP}/links/*`, `${TMP}/fakeLinks`);
-    t.is(shell.error(), null);
+    t.falsy(shell.error());
     t.falsy(result.stderr);
     t.is(result.code, 0);
     t.truthy(fs.lstatSync(`${TMP}/links/sym.lnk`).isSymbolicLink()); // this one is a link
@@ -302,7 +302,7 @@ test('Missing -R implies -L', t => {
       shell.cat(`${TMP}/fakeLinks/sym.lnk`).toString()
     );
     const result = shell.cp(`${TMP}/links/*`, `${TMP}/fakeLinks`); // don't use -R
-    t.is(shell.error(), null);
+    t.falsy(shell.error());
     t.falsy(result.stderr);
     t.is(result.code, 0);
     t.truthy(fs.lstatSync(`${TMP}/links/sym.lnk`).isSymbolicLink()); // this one is a link
@@ -320,7 +320,7 @@ test('recursive, everything exists, with force flag', t => {
   shell.ShellString('changing things around').to(`${TMP}/cp/dir_a/z`);
   t.not(shell.cat('resources/cp/dir_a/z').toString(), shell.cat(`${TMP}/cp/dir_a/z`).toString()); // before cp
   result = shell.cp('-Rf', 'resources/cp', TMP);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.falsy(result.stderr);
   t.is(result.code, 0);
   t.is(shell.cat('resources/cp/dir_a/z').toString(), shell.cat(`${TMP}/cp/dir_a/z`).toString()); // after cp
@@ -330,7 +330,7 @@ test(
   'recursive, creates dest dir since it\'s only one level deep (see Github issue #44)',
   t => {
     const result = shell.cp('-r', 'resources/issue44', `${TMP}/dir2`);
-    t.is(shell.error(), null);
+    t.falsy(shell.error());
     t.falsy(result.stderr);
     t.is(result.code, 0);
     t.is(shell.ls('-R', 'resources/issue44').toString(), shell.ls('-R', `${TMP}/dir2`).toString());
@@ -357,7 +357,7 @@ test(
 
 test('recursive, copies entire directory', t => {
   const result = shell.cp('-r', 'resources/cp/dir_a', `${TMP}/dest`);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.falsy(result.stderr);
   t.is(result.code, 0);
   t.is(fs.existsSync(`${TMP}/dest/z`), true);
@@ -366,7 +366,7 @@ test('recursive, copies entire directory', t => {
 test('recursive, with trailing slash, does the exact same', t => {
   const result = shell.cp('-r', 'resources/cp/dir_a/', `${TMP}/dest`);
   t.is(result.code, 0);
-  t.is(shell.error(), null);
+  t.falsy(shell.error());
   t.is(fs.existsSync(`${TMP}/dest/z`), true);
 });
 
@@ -450,7 +450,7 @@ test('-L overrides -P for copying directory', t => {
 test('Recursive, copies entire directory with no symlinks and -L option does not cause change in behavior', t => {
   if (process.platform !== 'win32') {
     const result = shell.cp('-rL', 'resources/cp/dir_a', `${TMP}/dest`);
-    t.is(shell.error(), null);
+    t.falsy(shell.error());
     t.falsy(result.stderr);
     t.is(result.code, 0);
     t.is(fs.existsSync(`${TMP}/dest/z`), true);
